@@ -1,0 +1,74 @@
+{
+  "name": "react-native-stylus-transformer",
+  "version": "1.0.0",
+  "description": "Stylus transformer for react-native",
+  "main": "index.js",
+  "repository": "https://github.com/kristerkari/react-native-stylus-transformer",
+  "scripts": {
+    "release": "npmpub",
+    "precommit": "lint-staged",
+    "test": "eslint ."
+  },
+  "author": "Krister Kari",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "keywords": [
+    "react-native",
+    "ReactNative",
+    "stylus",
+    "css",
+    "style",
+    "transformer"
+  ],
+  "dependencies": {
+    "css-to-react-native-transform": "^1.4.0",
+    "semver": "^5.5.0"
+  },
+  "peerDependencies": {
+    "react-native": ">=0.45.0",
+    "stylus": ">=0.54.5"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.2",
+    "npmpub": "^3.1.0",
+    "prettier": "^1.11.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "standard",
+    "rules": {
+      "space-before-function-paren": [
+        2,
+        "never"
+      ],
+      "semi": [
+        2,
+        "always"
+      ],
+      "quotes": [
+        2,
+        "double"
+      ]
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "none"
+  }
+}
