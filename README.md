@@ -25,7 +25,7 @@ module.exports = {
     return require.resolve("react-native-stylus-transformer");
   },
   getSourceExts() {
-    return ["styl"];
+    return ["js", "jsx", "styl"];
   }
 };
 ```
