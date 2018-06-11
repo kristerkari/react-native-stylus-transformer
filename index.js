@@ -30,7 +30,7 @@ module.exports.transform = function(src, filename, options) {
   }
 
   if (filename.endsWith(".styl")) {
-    var cssObject = css2rn(stylus.render(src), { parseMediaQueries: true });
+    var cssObject = css2rn(stylus.render(src, {filename}), { parseMediaQueries: true });
 
     return upstreamTransformer.transform({
       src: "module.exports = " + JSON.stringify(cssObject),
