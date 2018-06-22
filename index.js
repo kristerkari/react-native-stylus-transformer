@@ -7,7 +7,9 @@ var upstreamTransformer = null;
 var reactNativeVersionString = require("react-native/package.json").version;
 var reactNativeMinorVersion = semver(reactNativeVersionString).minor;
 
-if (reactNativeMinorVersion >= 52) {
+if (reactNativeMinorVersion >= 56) {
+  upstreamTransformer = require("metro/src/reactNativeTransformer");
+} else if (reactNativeMinorVersion >= 52) {
   upstreamTransformer = require("metro/src/transformer");
 } else if (reactNativeMinorVersion >= 47) {
   upstreamTransformer = require("metro-bundler/src/transformer");
@@ -30,7 +32,9 @@ module.exports.transform = function(src, filename, options) {
   }
 
   if (filename.endsWith(".styl")) {
-    var cssObject = css2rn(stylus.render(src, {filename}), { parseMediaQueries: true });
+    var cssObject = css2rn(stylus.render(src, { filename }), {
+      parseMediaQueries: true
+    });
 
     return upstreamTransformer.transform({
       src: "module.exports = " + JSON.stringify(cssObject),
