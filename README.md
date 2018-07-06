@@ -54,6 +54,9 @@ Your `App.styl` file might look like this:
 .myOtherClass {
   color: red;
 }
+.my-dashed-class {
+  color: green;
+}
 ```
 
 When you import your stylesheet:
@@ -71,6 +74,9 @@ var styles = {
   },
   myOtherClass: {
     color: "red"
+  },
+  "my-dashed-class" {
+    color: "green"
   }
 };
 ```
@@ -79,4 +85,6 @@ You can then use that style object with an element:
 
 ```jsx
 <MyElement style={styles.myClass} />
+
+<MyElement style={styles["my-dashed-class"]} />
 ```
