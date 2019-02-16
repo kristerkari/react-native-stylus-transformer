@@ -1,3 +1,7 @@
+## v1.1.3
+
+- Fixed: Compatibility with react-native v0.59
+
 ## v1.1.2
 
 - Updated: `css-to-react-native-transform` dependency to v1.7.0.
