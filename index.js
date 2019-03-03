@@ -27,6 +27,18 @@ if (reactNativeMinorVersion >= 59) {
   };
 }
 
+function renderToCSS({ src, filename, options }) {
+  return stylus.render(src, { filename });
+}
+
+function renderToCSSPromise(css) {
+  return Promise.resolve(renderToCSS(css));
+}
+
+function renderCSSToReactNative(css) {
+  return css2rn(css, { parseMediaQueries: true });
+}
+
 module.exports.transform = function(src, filename, options) {
   if (typeof src === "object") {
     // handle RN >= 0.46
@@ -34,10 +46,8 @@ module.exports.transform = function(src, filename, options) {
   }
 
   if (filename.endsWith(".styl")) {
-    var cssObject = css2rn(stylus.render(src, { filename }), {
-      parseMediaQueries: true
-    });
-
+    var css = renderToCSS({ src, filename, options });
+    var cssObject = renderCSSToReactNative(css);
     return upstreamTransformer.transform({
       src: "module.exports = " + JSON.stringify(cssObject),
       filename,
@@ -46,3 +56,5 @@ module.exports.transform = function(src, filename, options) {
   }
   return upstreamTransformer.transform({ src, filename, options });
 };
+
+module.exports.renderToCSS = renderToCSSPromise;
