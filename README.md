@@ -73,78 +73,74 @@ You can then use that style object with an element:
 ### Step 1: Install
 
 ```sh
+npm install --save-dev react-native-stylus-transformer stylus
+```
+
+or
+
+```sh
 yarn add --dev react-native-stylus-transformer stylus
 ```
 
 ### Step 2: Configure the react native packager
 
-#### For React Native v0.57 or newer / Expo SDK v31.0.0 or newer
+#### For Expo SDK v41.0.0 or newer
 
-Add this to `metro.config.js` in your project's root (create the file if it does not exist already):
+Merge the contents from your project's `metro.config.js` file with this config (create the file if it does not exist already).
+
+`metro.config.js`:
 
 ```js
-const { getDefaultConfig } = require("metro-config");
+const { getDefaultConfig } = require("expo/metro-config");
 
-module.exports = (async () => {
-  const {
-    resolver: { sourceExts }
-  } = await getDefaultConfig();
-  return {
-    transformer: {
-      babelTransformerPath: require.resolve("react-native-stylus-transformer")
-    },
-    resolver: {
-      sourceExts: [...sourceExts, "styl"]
-    }
+module.exports = (() => {
+  const config = getDefaultConfig(__dirname);
+
+  const { transformer, resolver } = config;
+
+  config.transformer = {
+    ...transformer,
+    babelTransformerPath: require.resolve("react-native-stylus-transformer")
   };
+  config.resolver = {
+    ...resolver,
+    sourceExts: [...sourceExts, "styl"]
+  };
+
+  return config;
 })();
 ```
 
-If you are using [Expo](https://expo.io/), you also need to add this to `app.json`:
-
-```json
-{
-  "expo": {
-    "packagerOpts": {
-      "config": "metro.config.js",
-      "sourceExts": ["js", "jsx", "styl"]
-    }
-  }
-}
-```
-
 ---
 
-#### For React Native v0.56 or older
+#### For React Native v0.72.1 or newer
 
-If you are using React Native without Expo, add this to `rn-cli.config.js` in your project's root (create the file if you don't have one already):
+Merge the contents from your project's `metro.config.js` file with this config (create the file if it does not exist already).
+
+`metro.config.js`:
 
 ```js
-module.exports = {
-  getTransformModulePath() {
-    return require.resolve("react-native-stylus-transformer");
+const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
+
+const defaultConfig = getDefaultConfig(__dirname);
+const { assetExts, sourceExts } = defaultConfig.resolver;
+
+/**
+ * Metro configuration
+ * https://reactnative.dev/docs/metro
+ *
+ * @type {import('metro-config').MetroConfig}
+ */
+const config = {
+  transformer: {
+    babelTransformerPath: require.resolve("react-native-stylus-transformer")
   },
-  getSourceExts() {
-    return ["js", "jsx", "styl"];
+  resolver: {
+    sourceExts: [...sourceExts, "styl"]
   }
 };
-```
 
----
-
-#### For Expo SDK v30.0.0 or older
-
-If you are using [Expo](https://expo.io/), instead of adding the `rn-cli.config.js` file, you need to add this to `app.json`:
-
-```json
-{
-  "expo": {
-    "packagerOpts": {
-      "sourceExts": ["js", "jsx", "styl"],
-      "transformer": "node_modules/react-native-stylus-transformer/index.js"
-    }
-  }
-}
+module.exports = mergeConfig(defaultConfig, config);
 ```
 
 ## CSS Custom Properties (CSS variables)
@@ -166,6 +162,12 @@ CSS variables are not supported by default, but you can add support for them by 
 Start by installing dependencies:
 
 ```sh
+npm install postcss postcss-css-variables react-native-postcss-transformer --save-dev
+```
+
+or
+
+```sh
 yarn add postcss postcss-css-variables react-native-postcss-transformer --dev
 ```
 
@@ -174,55 +176,28 @@ Add `postcss-css-variables` to your PostCSS configuration with [one of the suppo
 After that create a `transformer.js` file and do the following:
 
 ```js
-// For React Native version 0.59 or later
-var upstreamTransformer = require("metro-react-native-babel-transformer");
+const upstreamTransformer = require("@react-native/metro-babel-transformer");
+const stylusTransformer = require("react-native-stylus-transformer");
+const postCSSTransformer = require("react-native-postcss-transformer");
 
-// For React Native version 0.56-0.58
-// var upstreamTransformer = require("metro/src/reactNativeTransformer");
-
-// For React Native version 0.52-0.55
-// var upstreamTransformer = require("metro/src/transformer");
-
-// For React Native version 0.47-0.51
-// var upstreamTransformer = require("metro-bundler/src/transformer");
-
-// For React Native version 0.46
-// var upstreamTransformer = require("metro-bundler/build/transformer");
-
-var stylusTransformer = require("react-native-stylus-transformer");
-var postCSSTransformer = require("react-native-postcss-transformer");
-
-module.exports.transform = function({ src, filename, options }) {
+module.exports.transform = function({ src, filename, ...rest }) {
   if (filename.endsWith(".styl")) {
     return stylusTransformer
       .renderToCSS({ src, filename, options })
       .then(css =>
-        postCSSTransformer.transform({ src: css, filename, options })
+        postCSSTransformer.transform({ src: css, filename, ...rest })
       );
   } else {
-    return upstreamTransformer.transform({ src, filename, options });
+    return upstreamTransformer.transform({ src, filename, ...rest });
   }
 };
 ```
 
 After that in `metro.config.js` point the `babelTransformerPath` to that file:
 
-```js
-const { getDefaultConfig } = require("metro-config");
-
-module.exports = (async () => {
-  const {
-    resolver: { sourceExts }
-  } = await getDefaultConfig();
-  return {
-    transformer: {
-      babelTransformerPath: require.resolve("./transformer.js")
-    },
-    resolver: {
-      sourceExts: [...sourceExts, "styl"]
-    }
-  };
-})();
+```diff
+-require.resolve("react-native-stylus-transformer")
++require.resolve("./transformer.js")
 ```
 
 ## Dependencies
@@ -230,4 +205,3 @@ module.exports = (async () => {
 This library has the following Node.js modules as dependencies:
 
 - [css-to-react-native-transform](https://github.com/kristerkari/css-to-react-native-transform)
-- [semver](https://github.com/npm/node-semver#readme)
