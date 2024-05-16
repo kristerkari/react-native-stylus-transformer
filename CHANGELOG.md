@@ -1,3 +1,9 @@
+## v2.0.0
+
+- Breaking: drop support for `react-native` versions older than 0.59
+- Removed: `semver` dependency.
+- Added: support for `Expo SDK` v50.
+
 ## v1.2.0
 
 - Added: `renderToCSS` method. It can be used together with the PostCSS transformer to add support for CSS variables.
