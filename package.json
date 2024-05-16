@@ -1,6 +1,6 @@
 {
   "name": "react-native-stylus-transformer",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Stylus transformer for react-native",
   "main": "index.js",
   "repository": "https://github.com/kristerkari/react-native-stylus-transformer",
